@@ -34,8 +34,13 @@ Each card is represented by its value followed by its suit: D, H, C, S. For eamp
 When a player wins a battle, they put back the cards at the bottom of their deck in a precise order. First the cards from the first player, then the one from the second player – for a "war", all the cards from the first player then all the cards from the second player –
 
 For example, if the card distribution is the following:
+
 Joueur 1 : 10D 9S 8D KH 7D 5H 6S
+
 Joueur 2 : 10H 7H 5C QC 2C 4H 6D
+
 Then after one game turn, it will be:
+
 Joueur 1 : 5H 6S 10D 9S 8D KH 7D 10H 7H 5C QC 2C
+
 Joueur 2 : 4H 6D
