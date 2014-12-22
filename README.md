@@ -2,3 +2,38 @@ WINAMAX
 =======
 
 Goal is to write a program which finds out which player is the winner for a given card distribution of the "war" game
+
+Statement
+Before playing poker at Winamax, let's go back to basics with this simple card game: war!
+ 
+The program
+Your goal is to write a program which finds out which player is the winner for a given card distribution of the "war" game.
+
+The game
+War is a card game played between two players. Each player gets a variable number of cards of the beginning of the game: that's the player's deck. Cards are placed face down on top of each deck.
+ 
+Step 1 : the fight
+At each game round, in unison, each player reveals the top card of their deck – this is a "battle" – and the player with the higher card takes both the cards played and moves them to the bottom of their stack. The cards are ordered by value as follows, from weakest to strongest:
+2, 3, 4, 5, 6, 7, 8, 9, 10, J, Q, K, A.
+ 
+Step 2 : war
+If the two cards played are of equal value, then there is a "war". First, both players place the three next card of their pile face down. Then they go back to step 1 to decide who is going to win the war – several "wars" can be chained –. As soon as a player wins a "war", the winner adds all the cards from the "war" to their deck.
+ 
+Special cases:
+If a player runs out of cards during a "war" – when giving up the three cards or when doing the battle –, then the game ends and both players are placed equally first.
+The test cases provided in this puzzle are built in such a way that a game always ends – so you do not have to deal with infinite games –
+
+A player wins when the other player no longer has cards in their deck.
+
+Each card is represented by its value followed by its suit: D, H, C, S. For eample: 4H, 8C, AS.
+
+When a player wins a battle, they put back the cards at the bottom of their deck in a precise order. First the cards from the first player, then the one from the second player – for a "war", all the cards from the first player then all the cards from the second player –
+
+For example, if the card distribution is the following:
+Joueur 1 : 10D 9S 8D KH 7D 5H 6S
+Joueur 2 : 10H 7H 5C QC 2C 4H 6D
+Then after one game turn, it will be:
+Joueur 1 : 5H 6S 10D 9S 8D KH 7D 10H 7H 5C QC 2C
+Joueur 2 : 4H 6D
+ 
+>>> At Winamax, languages we love best are: C, C++, JavaScript, Objective-C et PHP. Shuffle up and deal! <<<
