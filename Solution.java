@@ -1,3 +1,5 @@
+
+
 import java.util.*;
 
 class Solution {
@@ -16,29 +18,42 @@ class Solution {
 
 	public Map<Integer,Integer> play()
 	{
-		int winner = 0;
+
 		Map<Integer,Integer> game = new HashMap<Integer, Integer>();
-		Player player1 = new Player(3,"P1");
-		Player player2 = new Player(3,"P2");
+		Player player1 = new Player(6,"P1");
+		Player player2 = new Player(6,"P2");
 
 		player1.push(new Card("AD"));
 		player1.push(new Card("KC"));
 		player1.push(new Card("QC"));
+		player1.push(new Card("2D"));
+		player1.push(new Card("4C"));
+		player1.push(new Card("7C"));
 
-		player2.push(new Card("KH"));
+		player2.push(new Card("AH"));
 		player2.push(new Card("QS"));
 		player2.push(new Card("JC"));
-		int count=0;
-		
-		
-			Card c1 = player1.pop();
-			Card c2 = player2.pop();
-			
-		 while(null != c1 || null != c2){
-			
+		player2.push(new Card("3D"));
+		player2.push(new Card("8C"));
+		player2.push(new Card("9C"));
+
+		game = playGame(player1,player2);
+
+		return game;
+	}
+
+	private Map<Integer, Integer> playGame(Player player1,Player player2) {
+		Map<Integer,Integer> game = new HashMap<Integer, Integer>();
+		int winner = 0;
+		int count = 0;
+		Card c1 = player1.pop();
+		Card c2 = player2.pop();
+		System.out.println(player2.deckStack.size());
+		while(null != c1 || null != c2){
+
 			if(null != c1 && null !=  c2)
 			{
-				 count++;
+				count++;
 				int value1 = convertToValue(c1.getValue());
 				int value2 = convertToValue(c2.getValue());
 
@@ -53,17 +68,19 @@ class Solution {
 				}
 				else if (value1 == value2)
 				{
-					System.out.println("This is a war");	
+					System.out.println("This is a war");
+					game = playWar(count,c1,c2,player1,player2);
+					return game;
 				}
 				else
 				{
 					System.out.println("Player 2 wins this battle");
 					player2.push(c2);
 					player2.push(c1);
-					
+
 				}
 			}
-			
+
 			if (null != c1 && null == c2)
 			{
 				System.out.println("Player1 wins the game with counts :"+ count);
@@ -74,15 +91,51 @@ class Solution {
 			else if (null != c2 && null == c1)
 			{
 				System.out.println("Player2 wins the game with counts :"+ count);
+				winner = 2;
 				game.put(winner, count);
 				return game;
 			}	
-			
+
 			c1 = player1.pop();
 			c2 = player2.pop();
 		}
+		return null;
+	}
+
+	private Map<Integer,Integer> playWar(int count,Card c1, Card c2, Player player1, Player player2) {
 		
-		 return null;
+		System.out.println("Put the next three cards head down");
+		
+		Map<Integer,Integer> game = new HashMap<Integer, Integer>();
+		Queue c1que = player1.getDeck();
+		Queue c2que = player2.getDeck();
+		
+		System.out.println(c1que.size()+" "+c2que.size());
+		
+		if(c1que.size() <= 3 || c2que.size() <= 3)
+		{
+			game.put(3, count);
+			return game;
+		}
+		else
+		{
+			for(int i=0; i <3; i++)
+			{
+				c1que.poll();
+				c2que.poll();
+			}
+			
+			Player p1 = new Player(c1que.size(),"SP1");
+			Player p2 = new Player(c1que.size(),"SP2");
+			
+			p1.deckStack = c1que;
+			p2.deckStack = c2que;
+			
+			game = playGame(p1, p2);
+			return game;
+		}
+		
+		
 	}
 
 	private int convertToValue(String card) {
@@ -143,7 +196,7 @@ class Solution {
 		int top;
 		String name;
 		int rear = 0;  
-
+		
 		public String getName() {
 			return name;
 		}
