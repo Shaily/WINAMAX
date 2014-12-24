@@ -1,5 +1,10 @@
 
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.*;
 
 class Solution {
@@ -20,50 +25,93 @@ class Solution {
 	{
 
 		Map<Integer,Integer> game = new HashMap<Integer, Integer>();
-		Player player1 = new Player(6,"P1");
-		Player player2 = new Player(6,"P2");
-
-		player1.push(new Card("AD"));
-		player1.push(new Card("KC"));
-		player1.push(new Card("QC"));
-		player1.push(new Card("2D"));
-		player1.push(new Card("4C"));
-		player1.push(new Card("7C"));
-
-		player2.push(new Card("AH"));
-		player2.push(new Card("QS"));
-		player2.push(new Card("JC"));
-		player2.push(new Card("3D"));
-		player2.push(new Card("8C"));
-		player2.push(new Card("9C"));
-
-		game = playGame(player1,player2);
+		Player player1 = readPlayers(1);
+		Player player2 = readPlayers(2);
+		int count = 0;
+		game = playGame(player1,player2,count);
 
 		return game;
 	}
 
-	private Map<Integer, Integer> playGame(Player player1,Player player2) {
+	private Player readPlayers(int p) {
+		Player player = new Player();
+
+		File file = new File("c:/temp/data.txt");
+		FileReader fr;
+		try {
+			fr = new FileReader(file);
+			int i=0;
+			BufferedReader br = new BufferedReader(fr);
+			String line = br.readLine();
+			int noOfCards = Integer.parseInt(line);
+
+			if(p==2){
+				//skip first noOfCards+1 lines
+				for(int j=1;j<noOfCards+1;j++)
+				{
+					br.readLine();
+				}
+				
+				line = br.readLine();
+				noOfCards = Integer.parseInt(line);
+			
+			}
+			
+			
+			String[] cards = new String[noOfCards];
+
+				while((line = br.readLine()) != null && i <noOfCards)
+				{		   		       
+					cards[i] = line; 
+					i=i+1;
+				}
+			
+			
+			br.close();
+			fr.close();
+			
+			player = new Player (noOfCards,"Player"+p);
+
+			for(int j=0;j<cards.length;j++)
+				player.push(new Card(cards[j]));
+
+			return player;
+		}
+		catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		return player;
+	}
+
+	private Map<Integer, Integer> playGame(Player player1,Player player2,int count) {
 		Map<Integer,Integer> game = new HashMap<Integer, Integer>();
 		int winner = 0;
-		int count = 0;
+		System.out.println("size : "+player1.deckStack.size()+" "+"size : "+player2.deckStack.size() + game);
 		Card c1 = player1.pop();
 		Card c2 = player2.pop();
-		System.out.println(player2.deckStack.size());
+	
 		while(null != c1 || null != c2){
 
 			if(null != c1 && null !=  c2)
 			{
-				count++;
+				
 				int value1 = convertToValue(c1.getValue());
 				int value2 = convertToValue(c2.getValue());
 
-				System.out.println(" : "+value1+" "+" : "+value2);
-
+				System.out.println(" : "+value1+" "+" : "+value2 + "  : count : "+ count);
+				
 				if(value1 > value2)
 				{
+					count++;
 					System.out.println("Player 1 wins this battle");
 					player1.push(c1);
 					player1.push(c2);
+
 					winner = 1;
 				}
 				else if (value1 == value2)
@@ -74,11 +122,14 @@ class Solution {
 				}
 				else
 				{
+					count++;
 					System.out.println("Player 2 wins this battle");
 					player2.push(c2);
 					player2.push(c1);
 
 				}
+				
+				System.out.println("size : "+player1.deckStack.size()+" "+"size : "+player2.deckStack.size());
 			}
 
 			if (null != c1 && null == c2)
@@ -103,15 +154,15 @@ class Solution {
 	}
 
 	private Map<Integer,Integer> playWar(int count,Card c1, Card c2, Player player1, Player player2) {
-		
+
 		System.out.println("Put the next three cards head down");
-		
+
 		Map<Integer,Integer> game = new HashMap<Integer, Integer>();
 		Queue c1que = player1.getDeck();
 		Queue c2que = player2.getDeck();
-		
-		System.out.println(c1que.size()+" "+c2que.size());
-		
+
+		System.out.println(c1que.size()+" "+c2que.size()+" "+game);
+
 		if(c1que.size() <= 3 || c2que.size() <= 3)
 		{
 			game.put(3, count);
@@ -124,23 +175,26 @@ class Solution {
 				c1que.poll();
 				c2que.poll();
 			}
-			
+			System.out.println(c1que.size()+" "+c2que.size()+" "+game);
 			Player p1 = new Player(c1que.size(),"SP1");
 			Player p2 = new Player(c1que.size(),"SP2");
-			
+
 			p1.deckStack = c1que;
 			p2.deckStack = c2que;
+
+			game = playGame(p1, p2,count);
 			
-			game = playGame(p1, p2);
 			return game;
 		}
-		
-		
+
+
 	}
 
 	private int convertToValue(String card) {
 		int value=0;
-		card = card.substring(0, 1);
+		
+		
+		card = card.substring(0, card.length()-1);
 		switch (card) {
 		case "2":  value = 2;
 		break;
@@ -174,85 +228,4 @@ class Solution {
 		return value;
 	}
 
-	public class Card{
-		String value;
-
-		public String getValue() {
-			return value;
-		}
-
-		public Card(String value) {
-			this.value = value;
-		}
-
-		public void setValue(String value) {
-			this.value = value;
-		}
-	}
-
-	public class Player {
-		int noOfCards=0;
-		Queue deckStack = null;
-		int top;
-		String name;
-		int rear = 0;  
-		
-		public String getName() {
-			return name;
-		}
-
-		public void setName(String name) {
-			this.name = name;
-		}
-
-		public void push(Card j) {
-			System.out.println(j.getValue()+" added");
-			deckStack.add((Card)j);
-		}
-
-		public Card pop() {
-
-			Card ret = null;
-			if(deckStack.size() != 0)
-			{
-				try
-				{
-					ret = (Card) deckStack.poll();
-					System.out.println("Value popped out : "+ ret.getValue());
-				}
-				catch(Exception e)
-				{
-
-				}
-			}
-			return ret;
-		}
-
-		public boolean isEmpty() {
-			return (top == -1);
-		}
-
-		public Player(int cards,String nameOfPlayer)
-		{
-			noOfCards = cards;
-			deckStack = new LinkedList<Card>();
-			top = -1;
-			name = nameOfPlayer;
-		}
-
-		public int getCards()
-		{
-			return noOfCards;
-		}
-
-		public void setCards(int cards)
-		{
-			noOfCards = cards;
-		}
-
-		public Queue getDeck()
-		{
-			return deckStack;
-		}
-	}
 }
